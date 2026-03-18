@@ -1,6 +1,6 @@
 const userModel = require("../models/user.models")
 const jwt = require("jsonwebtoken")
-
+const emailService = require("../services/email.service")
 async function userRegisterController(req, res) {
     try {
         const { email, password, name } = req.body
@@ -19,8 +19,9 @@ async function userRegisterController(req, res) {
             sameSite: "strict",
             maxAge: 24 * 60 * 60 * 1000
         })
-
+        
         res.status(201).json({ message: "user registered successfully", newUser, token })
+        await emailService.sendRegistrationEmail(newUser.email,newUser.name)
     } catch (err) {
         console.log(err)
         res.status(409).json("user registered failled")
