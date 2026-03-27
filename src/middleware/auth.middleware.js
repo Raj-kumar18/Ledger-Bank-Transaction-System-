@@ -1,5 +1,4 @@
 const userModel = require("../models/user.models")
-const ApiError = require("../utils/ApiError")
 const jwt = require("jsonwebtoken")
 const ApiError = require("../utils/ApiError")
 

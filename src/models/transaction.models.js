@@ -15,7 +15,7 @@ const transactionSchema = new mongoose.Schema({
      status:{
         type:String,
         enum:{
-            value:["PENDING","COMPLETED","FAILED","REVERSED"],
+            values:["PENDING","COMPLETED","FAILED","REVERSED"],
             message:"Status can be either PENDING, COMPLETED, FAILED or CLOSED",
         },
         default:"PENDING"
@@ -38,3 +38,4 @@ const transactionSchema = new mongoose.Schema({
 const transactionModel = mongoose.model("Transaction",transactionSchema)
 
 module.exports = transactionModel
+

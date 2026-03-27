@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
-const userSchema = new mongoose({
+const userSchema = new mongoose.Schema({
     email:{
         type:String,
         require:[true,"Email is requuire for creating a user"],
