@@ -1,8 +1,21 @@
 const exprss = require("express")
 const authMiddleware = require("../middleware/auth.middleware")
-const createAccount = require("../controllers/account.controller")
+const authController = require("../controllers/account.controller")
 const router = exprss.Router()
 
-router.post("/",authMiddleware,createAccount)
+/**
+ * @route POST /api/accounts
+ * @desc Create a new account for the authenticated user
+ * @access Private
+ */
+router.post("/",authMiddleware.authMiddleware,authController.createAccount)
+
+/**
+ * @route GET /api/accounts
+ * @desc Get all accounts for the authenticated user
+ * @access Private
+ */
+router.get("/",authMiddleware.authMiddleware,authController.getUserAccountsController)
+
 
 module.exports = router

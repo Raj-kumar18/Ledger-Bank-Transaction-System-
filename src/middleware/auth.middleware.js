@@ -30,4 +30,30 @@ async function authMiddleware(req, res, next) {
 
 }
 
-module.exports = authMiddleware
+async function authSystemUserMiddleware(req, res, next) {
+    const token = req.cookies.token || req.header.authoriziation?.split(" ")[1]
+
+    if (!token) {
+        throw new ApiError(401, "Token Not Found 😒")
+    }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const user = await userModel.findById(decoded.userId).select("+systemUser")
+        if (!user) {
+            throw new ApiError(401, "Invalid Access Token")
+        }
+
+        if (!user.systemUser) {
+            throw new ApiError(403, "Access Denied, System User Only")
+        }
+        req.user = user
+        return next()
+    } catch (error) {
+        throw new ApiError(403, error?.message || "Access Denied, System User Only")
+    }
+}
+
+module.exports = {
+    authMiddleware,
+    authSystemUserMiddleware
+}

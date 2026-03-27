@@ -18,4 +18,19 @@ async function createAccount(req,res){
     ))
 }
 
-module.exports = createAccount
+async function getUserAccountsController(req,res){
+    const user = req.user
+    const accounts = await accountModel.find({
+        user:user._id
+    })
+    return res.status(200).json(new ApiResponse(
+        200,
+        "User accounts retrieved successfully",
+        accounts
+    ))
+}
+
+module.exports = {
+    createAccount,
+    getUserAccountsController
+}
