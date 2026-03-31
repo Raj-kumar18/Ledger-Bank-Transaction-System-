@@ -1,6 +1,7 @@
 const userModel = require("../models/user.models")
 const jwt = require("jsonwebtoken")
 const ApiError = require("../utils/ApiError")
+const tokenBlacklistModel = require("../models/blackList.model")
 
 async function authMiddleware(req, res, next) {
     try {
@@ -8,6 +9,12 @@ async function authMiddleware(req, res, next) {
 
         if (!token) {
             throw new ApiError(401, "Token Not Found 😒")
+        }
+
+        const isBlackListed = await tokenBlacklistModel.findOne({ token })
+
+        if (isBlackListed) {
+            throw new ApiError(401, "Token is blacklisted, please login again")
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
@@ -37,6 +44,13 @@ async function authSystemUserMiddleware(req, res, next) {
         throw new ApiError(401, "Token Not Found 😒")
     }
     try {
+
+        const isBlackListed = await tokenBlacklistModel.findOne({ token })
+
+        if (isBlackListed) {
+            throw new ApiError(401, "Token is blacklisted, please login again")
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
         const user = await userModel.findById(decoded.userId).select("+systemUser")
         if (!user) {
