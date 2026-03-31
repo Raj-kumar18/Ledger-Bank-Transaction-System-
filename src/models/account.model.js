@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const ledgerModel = require("./ledger.models")
 
 const accountSchema = new mongoose.Schema({
     user: {
@@ -28,5 +29,24 @@ accountSchema.index({ user: 1, status: 1 })
 
 
 const accountModel = mongoose.model("Account", accountSchema)
+
+accountSchema.methods.getBalance = async function () {
+    const balanceData = await ledgerModel.aggregate([
+        { $match :{account: this._id} },
+        { $group: {
+            _id: null,
+            totalDebit: { $sum: { $cond : { $if: { $eq: ["$type", "DEBIT"] }, then: "$amount", else: 0 } } },
+            totalCredit: { $sum: { $cond : { $if: { $eq: ["$type", "CREDIT"] }, then: "$amount", else: 0 } } }
+        }},
+        { $project: {
+            _id: 0,
+            balance: { $subtract: ["$totalCredit", "$totalDebit"] }
+        }}
+    ])
+
+
+    return balanceData.length > 0 ? balanceData[0].balance : 0
+
+}
 
 module.exports = accountModel

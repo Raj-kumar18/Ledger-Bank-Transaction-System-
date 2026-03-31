@@ -73,6 +73,10 @@ async function createTransaction(req, res) {
         return res.status(400).json({ message: "Both accounts must be active to process the transaction" })
     }
 
+    // derive sender balance from user
+
+     
+
 
 }
 async function createInitialFundsTransaction(req, res) {
